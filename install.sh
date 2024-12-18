@@ -31,7 +31,7 @@ nmcli connection delete "Wifi"
 nmcli connection delete "Hotspot"
 
 echo "changing mac and hostname"
-random_mac="$(openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
+random_mac="00:$(openssl rand -hex 5 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
 hostnamectl set-hostname $HOSTNAME
 
 echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DEVICE"
@@ -42,8 +42,30 @@ nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETW
 nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
 nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
 nmcli connection modify "Wifi" 802-11-wireless.cloned-mac-address $random_mac
-nmcli connection modify "Wifi" connection.autoconnect-retries 0
-nmcli connection up "Wifi"' > /opt/rpi-repeater/runner.sh
+nmcli connection modify "Wifi" connection.autoconnect no
+nmcli connection up "Wifi"
+while true; do
+	connected_to=$(nmcli con | grep Wifi | sed '\''s/[ ][ ]*/ /g'\'' | cut -d " " -f 4)
+	if [ "$connected_to" == "--" ]; then
+		echo disconected, restarting network device, changing mac
+		nmcli connection delete "Wifi"
+		nmcli device disconnect iface $NETWORK_DEVICE
+		ip link set $NETWORK_DEVICE down
+		ip link set $NETWORK_DEVICE up
+		nmcli device connect $NETWORK_DEVICE
+		random_mac="00:$(openssl rand -hex 5 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
+		hostnamectl set-hostname $HOSTNAME
+		nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETWORK_SSID
+		nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
+		nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
+		nmcli connection modify "Wifi" 802-11-wireless.cloned-mac-address $random_mac
+		nmcli connection modify "Wifi" connection.autoconnect no
+		nmcli connection up "Wifi"
+	fi
+	sleep 1
+done
+
+' > /opt/rpi-repeater/runner.sh
 chmod 755 /opt/rpi-repeater/runner.sh
 
 echo '#!/bin/bash
