@@ -13,8 +13,7 @@ HOTSPOT_SSID=hotspot
 HOTSPOST_PASS=12345678
 NETWORK_DEVICE=wlan1
 NETWORK_SSID=home
-NETWORK_PASS=12345678
-' > /etc/rpi-repeater.conf
+NETWORK_PASS=12345678' > /etc/rpi-repeater.conf
 chmod 666 /etc/rpi-repeater.conf
 
 mkdir -p /opt/rpi-repeater
@@ -59,8 +58,7 @@ if [ ! -f $runner ]; then
 fi
 
 ENV=$(cat "$config_path" | tr '\''\n'\'' '\'' '\'')
-env $ENV ./$runner
-' > /opt/rpi-repeater/wrapper.sh
+env $ENV ./$runner' > /opt/rpi-repeater/wrapper.sh
 chmod 755 /opt/rpi-repeater/wrapper.sh
 
 echo '
@@ -78,8 +76,7 @@ Restart=on-failure
 RestartSec=5s
 
 [Install]
-WantedBy=multi-user.target
-' > /etc/systemd/system/rpi-repeater.service
+WantedBy=multi-user.target' > /etc/systemd/system/rpi-repeater.service
 
 echo "enable autostart service"
 systemctl daemon-reload
