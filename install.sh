@@ -26,8 +26,8 @@ nmcli connection delete "Wifi"
 nmcli connection delete "Hotspot"
 
 echo "changing mac and hostname"
-random_mac="00:$(openssl rand -hex 5 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
-echo $HOSTNAME > /etc/hostname
+random_mac="$(openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
+hostnamectl set-hostname $HOSTNAME
 
 echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DEVICE"
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
