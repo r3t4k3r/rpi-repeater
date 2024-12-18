@@ -62,16 +62,18 @@ chmod 755 /opt/rpi-repeater/wrapper.sh
 echo '
 [Unit]
 Description=Run rpi-repeater on boot
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
 User=root
 ExecStart=/bin/bash /opt/rpi-repeater/wrapper.sh /etc/rpi-repeater.conf /opt/rpi-repeater/runner.sh
 RemainAfterExit=yes
+Restart=on-failure
+RestartSec=5s
 
 [Install]
-After=network-online.target
-Wants=network-online.target
 WantedBy=multi-user.target
 ' > /etc/systemd/system/rpi-repeater.service
 
