@@ -4,7 +4,7 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-apt install network-manager macchanger
+apt install -y network-manager macchanger
 
 echo "creating files"
 echo '
@@ -27,7 +27,7 @@ fi
 
 echo "delete existing connections"
 nmcli connection delete "wifi"
-nmcli connection delete "hotspot"
+nmcli connection delete "Hotspot"
 
 echo "change mac"
 macchanger -r $NETWORK_DEVICE
