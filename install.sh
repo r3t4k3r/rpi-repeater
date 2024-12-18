@@ -36,8 +36,8 @@ nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HO
 
 echo "connect to ssid $NETWORK_SSID pass $NETWORK_PASS using dev $NETWORK_DEVICE"
 nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "wifi" ssid $NETWORK_SSID
-nmcli connection modify "wifi" wifi-sec.key-mgmt wpa-psk
-nmcli connection modify "wifi" wifi-sec.psk $NETWORK_PASS
+nmcli connection modify "wifi" 802-11-wireless.security wpa-psk wpa-psk
+nmcli connection modify "wifi" 802-11-wireless-security.psk $NETWORK_PASS
 nmcli connection up "wifi"
 ' > /opt/rpi-repeater/runner.sh
 chmod 755 /opt/rpi-repeater/runner.sh
