@@ -15,6 +15,7 @@ NETWORK_DEVICE=wlan1
 NETWORK_SSID=home
 NETWORK_PASS=12345678
 ' > /etc/rpi-repeater.conf
+chmod 666 /etc/rpi-repeater.conf
 
 mkdir -p /opt/rpi-repeater
 echo '
@@ -72,4 +73,8 @@ WantedBy=multi-user.target
 ' > /etc/systemd/system/rpi-repeater.service
 
 echo "starting service"
-systemctl enable --now rpi-repeater.service
+systemctl enable rpi-repeater.service
+
+echo "source: https://github.com/r3t4k3r/rpi-repeater"
+echo "now, please edit /etc/rpi-repeater.conf"
+echo "after that reboot device, or do systemctl start rpi-repeater.service"
