@@ -72,6 +72,7 @@ RemainAfterExit=yes
 [Install]
 After=network-online.target
 Wants=network-online.target
+WantedBy=multi-user.target
 ' > /etc/systemd/system/rpi-repeater.service
 
 echo "enable autostart service"
