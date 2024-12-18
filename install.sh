@@ -4,7 +4,7 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-apt install -y network-manager macchanger
+DEBIAN_FRONTEND=noninteractive apt install -yq network-manager macchanger
 
 echo "creating files"
 echo '
