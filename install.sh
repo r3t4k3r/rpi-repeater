@@ -30,7 +30,7 @@ nmcli connection delete "Hotspot"
 
 echo "changing mac, maybe it dont work at all"
 # macchanger -r $NETWORK_DEVICE
-random_mac="00:$(openssl rand -hex 5 | sed 's/\(..\)/\1:/g; s/:$//')"
+random_mac="00:$(openssl rand -hex 5 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
 
 echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DEVICE"
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
