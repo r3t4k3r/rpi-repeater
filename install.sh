@@ -53,7 +53,7 @@ if [ ! -f $runner ]; then
 	exit 1
 fi
 
-ENV=$(cat "$config_path" | tr "'\n"' "' "')
+ENV=$(cat "$config_path" | tr \'\\n\' \' \')
 env $ENV ./$runner
 ' > /opt/rpi-repeater/wrapper.sh
 chmod 755 /opt/rpi-repeater/wrapper.sh
