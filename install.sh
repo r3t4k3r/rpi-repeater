@@ -39,6 +39,14 @@ nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
 nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
 nmcli connection modify "Wifi" 802-11-wireless.cloned-mac-address $random_mac
 nmcli connection up "Wifi"
+
+while true; do
+	connected_to=$(nmcli con | grep Wifi | sed '\''s/[ ][ ]*/ /g'\'' | cut -d " " -f 4)
+	if [ "$connected_to" == "--" ]; then
+		nmcli connection up "Wifi"
+	fi
+	sleep 1
+done
 ' > /opt/rpi-repeater/runner.sh
 chmod 755 /opt/rpi-repeater/runner.sh
 
