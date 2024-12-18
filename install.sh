@@ -5,7 +5,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 echo "installing dependencies"
-DEBIAN_FRONTEND=noninteractive apt install -yq network-manager macchanger
+DEBIAN_FRONTEND=noninteractive apt install -yq network-manager # macchanger
 
 echo "creating files"
 echo '
@@ -27,11 +27,12 @@ if [ "$EUID" -ne 0 ]
 fi
 
 echo "delete existing connections"
-nmcli connection delete "Wifi"
+# nmcli connection delete "Wifi"
 nmcli connection delete "Hotspot"
 
 echo "changing mac, maybe it dont work at all"
-macchanger -r $NETWORK_DEVICE
+# macchanger -r $NETWORK_DEVICE
+
 echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DEVICE"
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
 
