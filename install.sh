@@ -33,7 +33,6 @@ echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DE
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
 
 echo "connect to ssid $NETWORK_SSID pass $NETWORK_PASS using dev $NETWORK_DEVICE"
-# nmcli dev wifi connect $NETWORK_SSID password $NETWORK_PASS ifname $NETWORK_DEVICE
 nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETWORK_SSID
 nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
 nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
@@ -43,6 +42,14 @@ nmcli connection up "Wifi"
 while true; do
 	connected_to=$(nmcli con | grep Wifi | sed '\''s/[ ][ ]*/ /g'\'' | cut -d " " -f 4)
 	if [ "$connected_to" == "--" ]; then
+		echo disconected, restarting network device
+		nmcli connection delete "Wifi"
+		ip link set $NETWORK_DEVICE down
+		ip link set $NETWORK_DEVICE up
+		nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETWORK_SSID
+		nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
+		nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
+		nmcli connection modify "Wifi" 802-11-wireless.cloned-mac-address $random_mac
 		nmcli connection up "Wifi"
 	fi
 	sleep 1
