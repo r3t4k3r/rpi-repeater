@@ -17,8 +17,7 @@ NETWORK_PASS=12345678' > /etc/rpi-repeater.conf
 chmod 666 /etc/rpi-repeater.conf
 
 mkdir -p /opt/rpi-repeater
-echo '
-#!/bin/bash
+echo '#!/bin/bash
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
   exit
@@ -41,12 +40,10 @@ nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETW
 nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
 nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
 nmcli connection modify "Wifi" 802-11-wireless.cloned-mac-address $random_mac
-nmcli connection up "Wifi"
-' > /opt/rpi-repeater/runner.sh
+nmcli connection up "Wifi"' > /opt/rpi-repeater/runner.sh
 chmod 755 /opt/rpi-repeater/runner.sh
 
-echo '
-#!/bin/bash
+echo '#!/bin/bash
 config_path=$1
 runner=$2
 
@@ -60,12 +57,10 @@ if [ ! -f $runner ]; then
 fi
 
 ENV=$(cat "$config_path" | tr '\''\n'\'' '\'' '\'')
-env $ENV ./$runner
-' > /opt/rpi-repeater/wrapper.sh
+env $ENV ./$runner' > /opt/rpi-repeater/wrapper.sh
 chmod 755 /opt/rpi-repeater/wrapper.sh
 
-echo '
-[Unit]
+echo '[Unit]
 Description=Run rpi-repeater on boot
 After=network-online.target
 Wants=network-online.target
@@ -79,8 +74,7 @@ Restart=on-failure
 RestartSec=5s
 
 [Install]
-WantedBy=multi-user.target
-' > /etc/systemd/system/rpi-repeater.service
+WantedBy=multi-user.target' > /etc/systemd/system/rpi-repeater.service
 
 echo "enable autostart service"
 systemctl daemon-reload
