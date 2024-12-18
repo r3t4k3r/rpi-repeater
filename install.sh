@@ -27,7 +27,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 echo "delete existing connections"
-nmcli connection delete "wifi"
+nmcli connection delete "Wifi"
 nmcli connection delete "Hotspot"
 
 echo "change mac"
@@ -36,7 +36,9 @@ echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DE
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
 
 echo "connect to ssid $NETWORK_SSID pass $NETWORK_PASS using dev $NETWORK_DEVICE"
-nmcli dev wifi connect $NETWORK_SSID password $NETWORK_PASS ifname $NETWORK_DEVICE
+nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETWORK_SSID
+nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
+nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
 ' > /opt/rpi-repeater/runner.sh
 chmod 755 /opt/rpi-repeater/runner.sh
 
