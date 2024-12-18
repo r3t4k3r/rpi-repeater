@@ -31,9 +31,10 @@ nmcli connection delete "Hotspot"
 
 echo "change mac"
 macchanger -r $NETWORK_DEVICE
-echo "start hotspot"
+echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DEVICE"
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
-echo "connect to network"
+
+echo "connect to ssid $NETWORK_SSID pass $NETWORK_PASS using dev $NETWORK_DEVICE"
 nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "wifi" ssid $NETWORK_SSID
 nmcli connection modify "wifi" wifi-sec.key-mgmt wpa-psk
 nmcli connection modify "wifi" wifi-sec.psk $NETWORK_PASS
