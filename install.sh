@@ -42,7 +42,8 @@ nmcli connection up "Wifi"
 while true; do
 	connected_to=$(nmcli con | grep Wifi | sed '\''s/[ ][ ]*/ /g'\'' | cut -d " " -f 4)
 	if [ "$connected_to" == "--" ]; then
-		echo disconected, restarting network device
+		echo disconected, restarting network device, changing mac
+		random_mac="$(openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
 		nmcli connection delete "Wifi"
 		ip link set $NETWORK_DEVICE down
 		ip link set $NETWORK_DEVICE up
