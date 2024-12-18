@@ -4,16 +4,14 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-echo "installing dependencies"
-DEBIAN_FRONTEND=noninteractive apt install -yq network-manager # macchanger
-
 echo "creating files"
 echo 'HOTSPOT_DEVICE=wlan0
 HOTSPOT_SSID=hotspot
 HOTSPOST_PASS=12345678
 NETWORK_DEVICE=wlan1
 NETWORK_SSID=home
-NETWORK_PASS=12345678' > /etc/rpi-repeater.conf
+NETWORK_PASS=12345678
+HOSTNAME=router' > /etc/rpi-repeater.conf
 chmod 666 /etc/rpi-repeater.conf
 
 mkdir -p /opt/rpi-repeater
@@ -27,9 +25,9 @@ echo "delete existing connections"
 nmcli connection delete "Wifi"
 nmcli connection delete "Hotspot"
 
-echo "changing mac, maybe it dont work at all"
-# macchanger -r $NETWORK_DEVICE
+echo "changing mac and hostname"
 random_mac="00:$(openssl rand -hex 5 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
+echo $HOSTNAME > /etc/hostname
 
 echo "start hotspot ssid $HOTSPOT_SSID pass $HOTSPOST_PASS using dev $HOTSPOT_DEVICE"
 nmcli device wifi hotspot ifname $HOTSPOT_DEVICE ssid $HOTSPOT_SSID password $HOTSPOST_PASS
@@ -82,7 +80,8 @@ echo "enable autostart service"
 systemctl daemon-reload
 systemctl enable rpi-repeater.service
 
+echo ""
 echo "source: https://github.com/r3t4k3r/rpi-repeater"
 echo ""
 echo "now, please edit /etc/rpi-repeater.conf"
-echo "after that reboot device, or do systemctl start rpi-repeater.service"
+echo "after that, reboot device, or do systemctl start rpi-repeater.service"
