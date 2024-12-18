@@ -4,6 +4,7 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+echo "installing dependencies"
 DEBIAN_FRONTEND=noninteractive apt install -yq network-manager macchanger
 
 echo "creating files"
@@ -59,7 +60,7 @@ env $ENV ./$runner
 chmod 755 /opt/rpi-repeater/wrapper.sh
 
 echo '
-Unit]
+[Unit]
 Description=Run rpi-repeater on boot
 
 [Service]
@@ -69,12 +70,15 @@ ExecStart=/bin/bash /opt/rpi-repeater/wrapper.sh /etc/rpi-repeater.conf /opt/rpi
 RemainAfterExit=yes
 
 [Install]
-WantedBy=multi-user.target
+After=network-online.target
+Wants=network-online.target
 ' > /etc/systemd/system/rpi-repeater.service
 
-echo "starting service"
+echo "enable autostart service"
+systemctl daemon-reload
 systemctl enable rpi-repeater.service
 
 echo "source: https://github.com/r3t4k3r/rpi-repeater"
+echo ""
 echo "now, please edit /etc/rpi-repeater.conf"
 echo "after that reboot device, or do systemctl start rpi-repeater.service"
