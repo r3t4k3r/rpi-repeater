@@ -4,16 +4,21 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-echo "creating files"
-echo 'HOTSPOT_DEVICE=wlan0
-HOTSPOT_SSID=hotspot
-HOTSPOST_PASS=12345678
-NETWORK_DEVICE=wlan1
-NETWORK_SSID=home
-NETWORK_PASS=12345678
-HOSTNAME=router' > /etc/rpi-repeater.conf
-chmod 666 /etc/rpi-repeater.conf
+if [ ! -f /etc/rpi-repeater.conf ]; then
+	echo "creating config"
+	echo 'HOTSPOT_DEVICE=wlan0
+	HOTSPOT_SSID=hotspot
+	HOTSPOST_PASS=12345678
+	NETWORK_DEVICE=wlan1
+	NETWORK_SSID=home
+	NETWORK_PASS=12345678
+	HOSTNAME=router' > /etc/rpi-repeater.conf
+	chmod 666 /etc/rpi-repeater.conf
+else
+	echo /etc/rpi-repeater.conf already exists, skip
+fi
 
+echo "installing the script"
 mkdir -p /opt/rpi-repeater
 echo '#!/bin/bash
 if [ "$EUID" -ne 0 ]
@@ -43,10 +48,11 @@ while true; do
 	connected_to=$(nmcli con | grep Wifi | sed '\''s/[ ][ ]*/ /g'\'' | cut -d " " -f 4)
 	if [ "$connected_to" == "--" ]; then
 		echo disconected, restarting network device, changing mac
-		random_mac="$(openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
 		nmcli connection delete "Wifi"
 		ip link set $NETWORK_DEVICE down
 		ip link set $NETWORK_DEVICE up
+		random_mac="$(openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/:$//'\'')"
+		hostnamectl set-hostname $HOSTNAME
 		nmcli connection add type wifi ifname $NETWORK_DEVICE con-name "Wifi" ssid $NETWORK_SSID
 		nmcli connection modify "Wifi" wifi-sec.key-mgmt wpa-psk
 		nmcli connection modify "Wifi" wifi-sec.psk $NETWORK_PASS
